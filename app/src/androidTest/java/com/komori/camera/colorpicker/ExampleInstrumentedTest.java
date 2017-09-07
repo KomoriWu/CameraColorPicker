@@ -1,4 +1,4 @@
-package cameracolorpicker.komori.com.cameracolorpicker;
+package com.komori.camera.colorpicker;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

@@ -1,4 +1,4 @@
-package cameracolorpicker.komori.com.cameracolorpicker;
+package com.komori.camera.colorpicker;
 
 import org.junit.Test;
 
