@@ -28,6 +28,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
@@ -262,8 +263,9 @@ public class MainActivity extends AppCompatActivity implements
                         os = new FileOutputStream(file);
                         os.write(data);
                         os.close();
-                        Intent intent = new Intent(MainActivity.this, Main2Activity.class);
-                        intent.putExtra("path", file.getPath());
+                        Intent intent = new Intent(MainActivity.this, ColorPickerActivity.class);
+                        intent.putExtra("path",file.getPath());
+                        Log.d("path",file.getPath());
                         startActivity(intent);
                     } catch (IOException e) {
                         Log.w(TAG, "Cannot write to " + file, e);

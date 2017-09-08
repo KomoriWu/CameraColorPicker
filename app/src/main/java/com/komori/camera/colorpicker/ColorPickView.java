@@ -6,11 +6,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.os.Environment;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
+import java.io.File;
 
 public class ColorPickView extends View {
     private Context context;
@@ -23,6 +27,8 @@ public class ColorPickView extends View {
     private Paint mPaintBitmap; // 背景画笔
     private Paint mCenterPaint; // 可移动小球画笔
     private Point mRockPosition;// 小球当前位置
+    private String bitmapPath;
+    private Bitmap newBitmap;
     private boolean isFirst = true;
     private OnColorChangedListener listener; // 小球移动的监听
 
@@ -46,6 +52,7 @@ public class ColorPickView extends View {
         this.listener = listener;
     }
 
+
     private void init(AttributeSet attrs, int defStyleAttr) {
         // 获取自定义组件的属性
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.color_picker,
@@ -63,8 +70,8 @@ public class ColorPickView extends View {
                             color_picker_center_radius, 10);
                     break;
                 case R.styleable.color_picker_image:
-                    mBitmap = BitmapFactory.decodeResource(getResources(), a.getResourceId(attr, R.
-                            drawable.splash_background));
+//                    mBitmap = BitmapFactory.decodeResource(getResources(), a.getResourceId(attr, R.
+//                            drawable.splash_background));
                     break;
                 case R.styleable.color_picker_imageScaleType:
                     scaleType = a.getInt(attr, 0);
@@ -72,7 +79,8 @@ public class ColorPickView extends View {
             }
         }
         a.recycle();
-
+        mBitmap = BitmapFactory.decodeFile("/storage/emulated/0/Android/data/cameracolorpicker.komori.com.cameracolorpicker/files/Pictures/picture.jpg", new
+                BitmapFactory.Options());
         // 中心位置坐标
         mRockPosition = new Point();
         // 初始化背景画笔和可移动小球的画笔
@@ -91,8 +99,7 @@ public class ColorPickView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         // 画背景图片
-        canvas.drawBitmap(mBitmap, 0, 0, mPaintBitmap);
-
+        canvas.drawBitmap(newBitmap, 0, 0, mPaintBitmap);
         // 画中心小球
         canvas.drawCircle(mRockPosition.x, mRockPosition.y, rudeRadius,
                 mCenterPaint);
@@ -121,7 +128,19 @@ public class ColorPickView extends View {
             mHeight = getPaddingTop() + getPaddingBottom() + mBitmap.getHeight();
         }
         if (isFirst) {
-            mRockPosition.set(mWidth / 2, mHeight / 2);
+            Matrix matrix = new Matrix();
+            float w = (float)mWidth /  mBitmap.getWidth();
+            float h = (float)mHeight /  mBitmap.getHeight();
+            matrix.postScale(w, h);//获取缩放比例
+            matrix.postRotate(90);//旋转
+            newBitmap = Bitmap.createBitmap(mBitmap, 0, 0,
+                    mBitmap.getWidth(), mBitmap.getHeight(), matrix, true); //根据缩放比例获取新的位图
+
+            mRockPosition.set(newBitmap.getWidth() / 2, newBitmap.getHeight() / 2);
+
+            int color = newBitmap.getPixel(mRockPosition.x, mRockPosition.y);
+            mCenterPaint.setColor(color);
+            listener.onColorChange(color);
         }
         setMeasuredDimension(mWidth, mHeight);
     }
@@ -136,7 +155,7 @@ public class ColorPickView extends View {
             case MotionEvent.ACTION_MOVE: // 移动
                 if ((int) event.getX() < mWidth && (int) event.getY() < mHeight) {
                     mRockPosition.set((int) event.getX(), (int) event.getY());
-                    int color=mBitmap.getPixel(mRockPosition.x, mRockPosition.y);
+                    int color = newBitmap.getPixel(mRockPosition.x, mRockPosition.y);
                     mCenterPaint.setColor(color);
                     listener.onColorChange(color);
                 }
