@@ -20,7 +20,6 @@ public class ColorPickView extends View {
     private Context context;
     private int rudeRadius; // 可移动小球的半径
     private int centerColor; // 可移动小球的颜色
-    private int scaleType;
     private int mWidth;
     private int mHeight;
     private Bitmap mBitmap; // 背景图片
@@ -72,9 +71,6 @@ public class ColorPickView extends View {
                 case R.styleable.color_picker_image:
 //                    mBitmap = BitmapFactory.decodeResource(getResources(), a.getResourceId(attr, R.
 //                            drawable.splash_background));
-                    break;
-                case R.styleable.color_picker_imageScaleType:
-                    scaleType = a.getInt(attr, 0);
                     break;
             }
         }
